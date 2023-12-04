@@ -6,6 +6,7 @@ numbers <- c()
 for (i in 1:length(data$V1)) {
   #select row
   s <- data$V1[i]
+  
   #select first digit
   first_digit <- gsub(".*?([0-9]).*", "\\1", s)
   
@@ -35,14 +36,13 @@ for (i in 1:length(data$V1)) {
 
   ## FIND FIRST DIGIT
   first_digit <- "n"
-  #select first digit or spelled number
+  #select first digit OR spelled number
   pre <- c()
   for(j in 1:length(s)) {
       if(is.na(as.numeric(s[j]))) {
         pre <- c(pre, s[j])
         pre_pasted <- paste(pre, collapse="")
-        print(pre_pasted)
-
+        #look for a meaningful number until one is found
         for(n in names(digits)) {
           if(length(grep(n, pre_pasted)) == 1) {
             first_digit <- as.character(digits[n])
