@@ -37,7 +37,6 @@ for(i in 1:length(map)) {
             nb_spare <- c(nb_spare, split_number[z])
             pos_spare <- c(pos_spare, j+z-1)
           }
-          
         }
       }
       #make into number
@@ -72,14 +71,15 @@ for(i in 1:15) {
   found <- map_df %>% dplyr::filter(V1 %in% symbols_dict[1:11]) %>%
     dplyr::filter(V3 >= (start-1) & V4 <= (end+1)) 
   if(l == 1) found <- found %>% dplyr::filter(V2=="2")
-  if(l == length(map)) found <- found %>% dplyr::filter(V2==as.character(length(map-1)))
+  if(l == length(map)) found <- found %>% dplyr::filter(V2==as.character(length(map)-1))
   if(!(l %in% c(1, length(map)))) found <- found %>% dplyr::filter(V2 %in% as.character(c(i-1, i+1)))
   if(nrow(found)>0) neighbours <- rbind(neighbours, found)
   #sides
   found <- map_df %>% dplyr::filter(V1 %in% symbols_dict[1:11]) %>%
       dplyr::filter((V2==as.character(n) & V3==as.character(start-1)) | (V2==as.character(n) & V3==as.character(end+1)))
   if(nrow(found)>0) neighbours <- rbind(neighbours, found)
-  if(!is.null(dim(neighbours))) keep <- c(keep, neighbours[,1])
+  print(neighbours)
+  if(!is.null(dim(neighbours))) keep <- c(keep, n)
 }
 
 
