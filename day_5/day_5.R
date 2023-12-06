@@ -1,4 +1,4 @@
-setwd("~/portfolio/AoC_2023/day_5/")
+setwd("~/Projects/AoC_2023/day_5/")
 data <- readLines("day_5_input.txt")
 #delineate last map by adding an extra empty line
 data <- c(data, "")
@@ -71,9 +71,13 @@ sum(seeds[seq(2, length(seeds), 2)])
 
 value_to_map <- function(n, map) {
   #find start of source
-  source_start <- map$source[which(map$source>=n)[1]]
+  map <- map[order(map$source),]
+  map$source_end <- map$source + map$range_len
+  source_end<- map$source_end[which(map$source_end>=n)]
+  source_end <- source_end[1]
+  source_start <- map[which(map$source_end == source_end), "source"]
   #find the increment 
-  inc <- source_start-n
+  inc <- n-source_start
   #calculate mapped value
   mapped <- map[which(map$source == source_start), "destination"] + inc
   return(mapped)
@@ -86,7 +90,7 @@ for(i in 1:length(seeds)) {
   n <- seeds[i]
   #go through all the maps 
   for(j in 1:length(maps_list)) {
-    map <- maps_list[[j]] %>% dplyr::arrange(source)
+    map <- maps_list[[j]] 
     n <- value_to_map(n, map)
   }
   #append
