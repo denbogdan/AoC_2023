@@ -1,4 +1,4 @@
-setwd("~/Projects/AoC_2023/day_3/")
+setwd("~/portfolio/AoC_2023/day_3/")
 map <- readLines("day_3_input.txt")
 
 #unique symbols in this map 
@@ -13,29 +13,36 @@ map_df <- c(0,0,0,0)
 for(i in 1:length(map)) {
   #split row
   row <- strsplit(map[i], split="\\.") |> unlist()
-  
+  inc <- 0
   #for each element of this row, increase j and pointer accordingly
   for(j in 1:length(row)) {
-    #skip all the ones without numbers
     nb <- c()
     pos <-c()
     nb_spare <- c()
     pos_spare <-c()
+    #skip all the ones without numbers
     if(row[j] != "") {
       #split into vector of characters
       split_number <- strsplit(row[j], split="") |> unlist()
       symbol_found <- FALSE
+      number_found <- FALSE
       for(z in 1:length(split_number)) {
         if(split_number[z] %in% symbols_dict[1:11]) {
-          map_df <- rbind(map_df, c(split_number[z] |> unlist(), i, j+z-1, j+z-1))
+          if(length(nb) > 0) number_found <- TRUE
+          if(number_found)
+            map_df <- rbind(map_df, c(split_number[z] |> unlist(), i, j+inc+z, j+inc+z))
+          else
+            map_df <- rbind(map_df, c(split_number[z] |> unlist(), i, j+inc+z-1, j+inc+z-1))
           symbol_found <- TRUE
         } else {
-          if(!symbol_found) {
+          if(number_found == FALSE) {
             nb <- c(nb, split_number[z])
-            pos <- c(pos, j+z-1) 
+            pos <- c(pos, j+z+inc) 
           } else {
-            nb_spare <- c(nb_spare, split_number[z])
-            pos_spare <- c(pos_spare, j+z-1)
+            if(symbol_found) {
+              nb_spare <- c(nb_spare, split_number[z])
+              pos_spare <- c(pos_spare, j+inc+z)
+            }
           }
         }
       }
@@ -44,11 +51,15 @@ for(i in 1:length(map)) {
       #add to df
       map_df <- rbind(map_df, c(nb_real, i, pos[1], pos[length(pos)]))
       #and the spare
+      adjust=1
       if(length(nb_spare) >0) {
         nb_real <- paste0(nb_spare, collapse="")
         map_df <- rbind(map_df, c(nb_real, i, pos_spare[1], pos_spare[length(pos_spare)]))
+        adjust=0
       }
-        
+      #count nbs
+      just_digits <- split_number |> as.numeric()
+      inc <- inc + length(just_digits[!is.na(just_digits)])-adjust
     }
   }
 }
