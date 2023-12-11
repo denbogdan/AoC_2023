@@ -213,9 +213,16 @@ for(i in 1:nrow(stars)) {
   
   p <- 0
   if(nrow(unique_numbers) == nrow(unique_numbers %>% dplyr::distinct())) {
-    if(length(neighbours)==2) p <- prod(neighbours)
+    if(length(neighbours)==2) {
+      p <- prod(neighbours)
+      }
   } else {
-    if(length(neighbours)>2) p <- prod(unique(neighbours))
+    if(length(neighbours) == 3 & length(unique(neighbours)) == 1) { 
+      n <- unique(neighbours) |> as.numeric()
+      p <-  n*n }
+    if(length(neighbours)>2 & length(unique(neighbours)) !=1) {
+      p <- prod(unique(neighbours))
+    }
   }
 
   keep_stars <- c(keep_stars, p)
