@@ -228,4 +228,5 @@ for(i in 1:nrow(stars)) {
   keep_stars <- c(keep_stars, p)
 }
 
+##Answer 2 -------------------------------------------------------------------------
 sum(keep_stars)
