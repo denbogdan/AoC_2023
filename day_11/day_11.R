@@ -35,15 +35,14 @@ unique_pairs <- combn(1:nrow(g_df), 2)
 
 ##Question 1 -----------------------------------------------------------------------
 #we are going to modify these coordinates by adding the appropriate number of rows and columns 
-#the inset is the offset my which each position changes with every new blank line discovered
+#the inset is the offset by which each position changes with every new blank line discovered
 g_df_changed <- g_df
+#each row or column that 'doubles' effectively introduces 1 more of itself
 inserts <- 1
 #rows 
 for(i in 1:length(rows_to_expand)) {
-  #print(i)
   inc <- (inserts*(i-1))
-  #print(inc)
-  #row that introduces and increment
+  #row that introduces an increment
   r <- rows_to_expand[i] + inc
   #find all the subsequent rows affected
   affected_rows <- seq(r+1,(nrow(sky_matrix)+inc))
@@ -54,18 +53,18 @@ for(i in 1:length(rows_to_expand)) {
 #columns 
 for(i in 1:length(cols_to_expand)) {
   inc <- (inserts*(i-1))
-  #row that introduces and increment
+  #row that introduces an increment
   c <- cols_to_expand[i] + inc
-  #find all the subsequent rows affected
+  #find all the subsequent columns affected
   affected_cols <- seq(c+1,(ncol(sky_matrix)+inc))
-  #find all these rows in df and augment
+  #find all these columns in df and augment
   g_df_changed$V2[which(g_df_changed$V2 %in% affected_cols)] <- g_df_changed$V2[which(g_df_changed$V2 %in% affected_cols)] + inserts
 }
 
 all_distances <- c()
 for(i in 1:ncol(unique_pairs)) {
   pair <- unique_pairs[,i]
-  #select rows from coordinates data frame
+  #select points from coordinates data frame
   A <- g_df_changed[pair[1],]
   B <- g_df_changed[pair[2],]
   #distance - Pythagoras who???
@@ -81,11 +80,12 @@ all_distances |> sum()
 ##Question 2 -----------------------------------------------------------------------
 #same progam - all that needs to change is the number of inserts
 g_df_changed <- g_df
+#each row or column that 'multiplies by a million' effectively introduces million-1 more of itself
 inserts <- 1000000-1
 #rows 
 for(i in 1:length(rows_to_expand)) {
   inc <- (inserts*(i-1))
-  #row that introduces and increment
+  #row that introduces an increment
   r <- rows_to_expand[i] + inc
   #find all the subsequent rows affected
   affected_rows <- seq(r+1,(nrow(sky_matrix)+inc))
@@ -96,18 +96,18 @@ for(i in 1:length(rows_to_expand)) {
 #columns 
 for(i in 1:length(cols_to_expand)) {
   inc <- (inserts*(i-1))
-  #row that introduces and increment
+  #row that introduces an increment
   c <- cols_to_expand[i] + inc
-  #find all the subsequent rows affected
+  #find all the subsequent columns affected
   affected_cols <- seq(c+1,(ncol(sky_matrix)+inc))
-  #find all these rows in df and augment
+  #find all these columns in df and augment
   g_df_changed$V2[which(g_df_changed$V2 %in% affected_cols)] <- g_df_changed$V2[which(g_df_changed$V2 %in% affected_cols)] + inserts
 }
 
 all_distances <- c()
 for(i in 1:ncol(unique_pairs)) {
   pair <- unique_pairs[,i]
-  #select rows from coordinates data frame
+  #select points from coordinates data frame
   A <- g_df_changed[pair[1],]
   B <- g_df_changed[pair[2],]
   #distance - Pythagoras who???
