@@ -55,18 +55,7 @@ s
 
 ##Question 2 -----------------------------------------------------------------------
 #write function that takes vector and returns it reordered
-
-line = m[,1]
-line
-rev(line)
-
-test = memoise(function(n) {
-  i = stringr::str_locate_all(apply(n,2,paste,sep="",collapse=""),pattern = "[^#]+")
-  return(i)
-})
-system.time(test(m))
-test(m)
-
+#my version
 reorder_line <- function(line) {
   portion <- c()
   ordered <- c()
@@ -216,3 +205,39 @@ for(i in 1:1000000000) {
   m <- memoised_tilt_dish(m, "south")
   m <- memoised_tilt_dish(m, "east")
 }
+
+#George's version
+r_line <- memoise(function(line) {
+  l <- stringr::str_locate_all(paste0(line, collapse = ""), pattern = "[^#]+")[[1]]
+  for(j in 1:nrow(l)) {
+    st <- sort(line[l[j,1] : l[j,2]], decreasing=TRUE)
+    line[l[j,1] : l[j,2]] <- st
+  }
+  return(line)
+})
+
+tilt_cycle <- memoise(function(matrix) {
+  #tilt north
+  for(i in 1:ncol(matrix)) 
+    matrix[,i] <- r_line(matrix[,i])
+  
+  #tilt west
+  for(i in 1:nrow(matrix)) 
+    matrix[i,] <- r_line(matrix[i,])
+  
+  #tilt south
+  for(i in 1:ncol(matrix)) 
+    matrix[,i] <- rev(r_line(rev(matrix[,i])))
+  
+  #tilt east
+  for(i in 1:nrow(matrix)) 
+    matrix[i,] <- rev(r_line(rev(matrix[i,])))
+  
+  return(matrix)
+})
+
+m <- dish_matrix
+for(i in 1:1000000000) {
+  m <- tilt_cycle(m)
+}
+
