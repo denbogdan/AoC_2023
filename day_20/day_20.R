@@ -1,5 +1,5 @@
 setwd("~/portfolio/AoC_2023/day_20/")
-data <- read.delim("dummy_2.txt", header=FALSE, sep="-")
+data <- read.delim("dummy_1.txt", header=FALSE, sep="-")
 
 #wrangle into list of nodes and destinations
 data$V2 <- gsub(">", "", data$V2)
@@ -29,7 +29,7 @@ names(conj_status) <- names(node_type)[which(node_type == "&")]
 
 #actually solve the problem
 COUNTER <- c()
-for(z in 1:4) {
+for(z in 1:1000) {
   #start at broadcaster
   nodes_to_visit <- nodes["roadcaster"] |> unlist()
   COUNTER <- c(COUNTER, "low", rep("low", length(nodes_to_visit)))
@@ -49,8 +49,8 @@ for(z in 1:4) {
           nodes_panel_update[n, "status"] <- ifelse(nodes_panel[n, "status"] == 0, 1, 0)
           #update out
           nodes_panel_update[n, "outp"] <- ifelse(nodes_panel_update[n, "status"] == 0, "low", "high")
-          print(paste(n, "-", nodes_panel_update[n, "outp"], "to", unlist(nodes[n])))
-          #use this out to update all the children
+          #print(paste(n, "-", nodes_panel_update[n, "outp"], "to", unlist(nodes[n])))
+          #use this out to update the input to all the children
           nodes_panel_update[(nodes_panel$node %in% unlist(nodes[n])), "inp"] <- nodes_panel_update[n, "outp"]
           #count
           COUNTER <- c(COUNTER, rep(nodes_panel_update[n, "outp"], length(unlist(nodes[n]))))
@@ -59,7 +59,7 @@ for(z in 1:4) {
         }
       } else {
         #if dealing with a conj node, look into its history
-        statuses <- nodes_panel[(nodes_panel$node %in% conj_status[[n]]), "outp"]
+        statuses <- nodes_panel_update[(nodes_panel$node %in% conj_status[[n]]), "outp"]
         #count all high
         count <- sum(statuses == "high")
         #update out
@@ -69,9 +69,9 @@ for(z in 1:4) {
           nodes_panel_update[n, "outp"] <- ifelse(statuses == "low", "high", "low")
         }
           
-        #use this out to update all the children
+        #use this out to update the input to all the children
         nodes_panel_update[(nodes_panel$node %in% unlist(nodes[n])), "inp"] <- nodes_panel_update[n, "outp"]
-        print(paste(n, "-", nodes_panel_update[n, "outp"], "to", unlist(nodes[n])))
+        #print(paste(n, "-", nodes_panel_update[n, "outp"], "to", unlist(nodes[n])))
         #count
         COUNTER <- c(COUNTER, rep(nodes_panel_update[n, "outp"], length(unlist(nodes[n]))))
         #update what's next
@@ -89,3 +89,18 @@ for(z in 1:4) {
 table(COUNTER)
 
 prod(table(COUNTER))
+
+## VISUALISATION
+edges <- c()
+for(i in 1:length(nodes)) {
+  for(j in 1:length(nodes[[i]]))
+    edges <- c(edges, names(nodes)[i], nodes[[i]][j]) 
+}
+
+g <- make_graph(edges, directed = TRUE)
+
+plot(g, edge.arrow.size=0.1, vertex.color="orange", vertex.size=8,
+     vertex.frame.color="gray", vertex.label.color="black",
+     vertex.label.cex=0.7, vertex.label.dist=0.1, edge.curved=0.2)
+
+
